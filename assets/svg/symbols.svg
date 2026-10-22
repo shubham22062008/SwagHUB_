@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- SwagHUB Geometric Wordmark -->
+  <symbol id="swaghub-wordmark" viewBox="0 0 280 40">
+    <g fill="currentColor">
+      <path d="M10 28L4 22L8 18L18 20L22 14L16 8L2 10L0 4L18 0L28 8L22 20L12 18L8 24L24 22L28 28L10 32Z" />
+      <text x="36" y="28" font-family="'Syne', sans-serif" font-weight="900" font-size="28" letter-spacing="4">SWAG<tspan fill="#8e8e93" font-weight="400">HUB</tspan></text>
+      <text x="210" y="16" font-family="'Space Grotesk', monospace" font-size="8" letter-spacing="2" fill="#71717a">/// 001</text>
+      <circle cx="260" cy="14" r="3" fill="#22c55e" />
+    </g>
+  </symbol>
+
+  <!-- SwagHUB Minimal Emblem -->
+  <symbol id="swaghub-emblem" viewBox="0 0 60 60">
+    <polygon points="30,4 56,18 56,42 30,56 4,42 4,18" fill="none" stroke="currentColor" stroke-width="2.5" />
+    <polygon points="30,12 48,22 48,38 30,48 12,38 12,22" fill="#141414" stroke="#8e8e93" stroke-width="1.5" />
+    <path d="M22 20 L38 20 L22 40 L38 40" fill="none" stroke="#f5f5f7" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter" />
+    <circle cx="30" cy="30" r="2" fill="#ef4444" />
+  </symbol>
+
+  <!-- Embroidered Tactical Patch -->
+  <symbol id="tactical-patch" viewBox="0 0 200 80">
+    <rect x="2" y="2" width="196" height="76" rx="4" fill="#0c0c0e" stroke="#27272a" stroke-width="3" stroke-dasharray="4,3" />
+    <rect x="8" y="8" width="184" height="64" rx="2" fill="#18181b" />
+    <line x1="14" y1="14" x2="186" y2="14" stroke="#3f3f46" stroke-width="1" />
+    <text x="16" y="32" font-family="'Syne', sans-serif" font-weight="900" font-size="14" fill="#f4f4f5" letter-spacing="2">SWAGHUB // SPEC-01</text>
+    <text x="16" y="46" font-family="'Space Grotesk', monospace" font-size="9" fill="#a1a1aa" letter-spacing="1">SIGNAL CORP / TOKYO-BERLIN</text>
+    <text x="16" y="58" font-family="'Space Grotesk', monospace" font-size="8" fill="#71717a">RN: 884-902 // 3M REFLECTIVE</text>
+    <!-- Barcode graphic -->
+    <g transform="translate(130, 24)" fill="#d4d4d8">
+      <rect x="0" y="0" width="2" height="28" />
+      <rect x="4" y="0" width="1" height="28" />
+      <rect x="7" y="0" width="4" height="28" />
+      <rect x="13" y="0" width="2" height="28" />
+      <rect x="17" y="0" width="1" height="28" />
+      <rect x="20" y="0" width="3" height="28" />
+      <rect x="25" y="0" width="2" height="28" />
+      <rect x="29" y="0" width="4" height="28" />
+      <rect x="35" y="0" width="1" height="28" />
+      <rect x="38" y="0" width="2" height="28" />
+      <rect x="42" y="0" width="3" height="28" />
+      <rect x="48" y="0" width="2" height="28" />
+      <text x="2" y="36" font-family="'Space Grotesk', monospace" font-size="6" fill="#a1a1aa" letter-spacing="1">884902001</text>
+    </g>
+  </symbol>
+</svg>

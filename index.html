@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwagHUB // Wear Your Signal — Luxury Technical Streetwear</title>
+  <meta name="description" content="Cinematic dark luxury streetwear platform featuring Drop 001 technical flight jackets, modular cargos, and 500 GSM loopback French terry.">
+  
+  <!-- Tailwind CSS Play CDN (Modern JIT Engine) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'void': '#050507',
+            'charcoal': {
+              950: '#0a0a0d',
+              900: '#121216',
+              850: '#16161b',
+              800: '#1e1e26',
+              700: '#2c2c38',
+              600: '#3f3f4e'
+            }
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- External CDNs: Three.js & GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-void text-zinc-100 antialiased selection:bg-white selection:text-black">
+
+  <!-- Custom Precision Magnetic Cursor -->
+  <div id="custom-cursor-ring" aria-hidden="true"></div>
+  <div id="custom-cursor-dot" aria-hidden="true"></div>
+
+  <!-- Real-time Atmospheric Film Grain Overlay -->
+  <div class="film-grain-overlay" aria-hidden="true"></div>
+
+  <!-- Top Status & Audio Control HUD -->
+  <aside class="fixed top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none" aria-label="Audio and Radar HUD">
+    <!-- Dispatch Radar Clocks -->
+    <div class="pointer-events-auto hidden md:flex items-center gap-3 px-3.5 py-1.5 bg-black/70 backdrop-blur-md border border-zinc-800/80 rounded-full font-mono text-[11px] text-zinc-400">
+      <span class="flex items-center gap-1.5 text-zinc-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+        DISPATCH RADAR
+      </span>
+      <span class="text-zinc-700">|</span>
+      <span>TYO <span class="text-white font-semibold">03:42</span></span>
+      <span>BER <span class="text-white font-semibold">19:42</span></span>
+      <span>NYC <span class="text-white font-semibold">13:42</span></span>
+    </div>
+
+    <!-- Audio Soundscape Toggle Button -->
+    <div class="pointer-events-auto flex items-center gap-2 ml-auto">
+      <button 
+        id="audio-toggle-btn"
+        class="flex items-center gap-2.5 px-3.5 py-1.5 bg-black/80 backdrop-blur-md border border-zinc-800 hover:border-zinc-500 text-zinc-300 hover:text-white rounded-full font-mono text-[11px] tracking-wider uppercase transition-all shadow-xl focus:outline-none"
+        aria-label="Toggle Cinematic Ambient Soundscape">
+        <!-- Visualizer Bars -->
+        <div id="audio-visualizer-bars" class="flex items-end gap-0.5 h-3.5 w-4" aria-hidden="true">
+          <span class="w-1 bg-current rounded-t transition-all duration-75" style="height: 4px;"></span>
+          <span class="w-1 bg-current rounded-t transition-all duration-75" style="height: 8px;"></span>
+          <span class="w-1 bg-current rounded-t transition-all duration-75" style="height: 6px;"></span>
+          <span class="w-1 bg-current rounded-t transition-all duration-75" style="height: 10px;"></span>
+        </div>
+        <span id="audio-status-label">SOUND // 432Hz</span>
+      </button>
+
+      <!-- Quick Bag Icon (Mobile & Desktop) -->
+      <button 
+        class="open-bag-btn relative flex items-center justify-center w-8 h-8 rounded-full bg-black/80 backdrop-blur-md border border-zinc-800 hover:border-zinc-500 text-white transition-all shadow-xl focus:outline-none"
+        aria-label="Open Shopping Bag">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="bag-count-badge absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white text-black font-mono text-[9px] font-bold flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 1. HERO 3D EXPERIENCE: Floating Bomber Jacket & Interactive Zipper        -->
+  <!-- ========================================================================= -->
+  <header id="hero-section" class="relative w-full h-screen overflow-hidden flex flex-col items-center justify-between p-6 select-none">
+    
+    <!-- Three.js Canvas Container -->
+    <div id="hero-canvas-container" class="absolute inset-0 z-0">
+      <canvas id="hero-canvas" class="w-full h-full block"></canvas>
+    </div>
+
+    <!-- Top Brand Masthead Header -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between pt-12 md:pt-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-zinc-900 border border-zinc-700 rounded-sm flex items-center justify-center text-white font-syne font-black text-lg">
+          S
+        </div>
+        <div>
+          <h1 class="text-base md:text-lg font-syne font-black tracking-widest text-white uppercase">SWAGHUB</h1>
+          <p class="text-[9px] font-mono text-zinc-500 tracking-widest uppercase">UNDERGROUND LUXURY // 001</p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-6 font-mono text-xs text-zinc-400">
+        <span class="text-emerald-400 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          DROP 001 LIVE
+        </span>
+        <span>LIMITED PRODUCTION: 150 PCS WORLDWIDE</span>
+      </div>
+    </div>
+
+    <!-- Center Floating Jacket Title & Interaction Prompt -->
+    <div class="relative z-10 text-center max-w-xl mx-auto pointer-events-none mb-4">
+      <p class="text-xs md:text-sm font-mono tracking-[0.3em] text-zinc-400 uppercase mb-2">
+        PHANTOM SPEC-01 // FLIGHT JACKET
+      </p>
+      <h2 class="text-3xl md:text-5xl lg:text-6xl font-syne font-black text-white uppercase tracking-tight leading-none drop-shadow-2xl">
+        WEAR YOUR<br>SIGNAL
+      </h2>
+    </div>
+
+    <!-- Bottom Zipper Controller & Unzip Action HUD -->
+    <div class="relative z-10 w-full max-w-md mx-auto mb-4 p-4 bg-black/60 backdrop-blur-xl border border-zinc-800/80 rounded-2xl flex flex-col items-center gap-3 shadow-2xl">
+      <div class="w-full flex items-center justify-between font-mono text-[11px] text-zinc-400">
+        <span class="flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+          </svg>
+          DRAG OR SCROLL TO UNZIP
+        </span>
+        <span id="zipper-percentage" class="text-white font-bold text-xs">0%</span>
+      </div>
+
+      <!-- Zipper Track Progress Bar -->
+      <div class="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 relative">
+        <div id="zipper-track-fill" class="h-full bg-gradient-to-r from-zinc-500 via-white to-zinc-300 w-0 transition-all duration-100"></div>
+      </div>
+
+      <!-- Direct Enter Action Button -->
+      <button 
+        id="hero-action-unzip"
+        class="w-full py-2.5 bg-zinc-900 hover:bg-white text-zinc-300 hover:text-black font-mono font-bold text-xs uppercase tracking-widest rounded-lg border border-zinc-700 transition-all duration-300 flex items-center justify-center gap-2">
+        <span>ENTER THE SIGNAL</span>
+        <span>→</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. HYPERSPACE TUNNEL TRANSITION OVERLAY                                    -->
+  <!-- ========================================================================= -->
+  <div id="tunnel-transition-overlay" class="fixed inset-0 z-40 pointer-events-none opacity-0 transition-opacity duration-700 bg-black flex flex-col items-center justify-center overflow-hidden">
+    <div class="tunnel-ring absolute w-[600px] h-[600px] border border-zinc-700/60 rounded-full"></div>
+    <div class="tunnel-ring absolute w-[400px] h-[400px] border-2 border-white/40 rounded-full"></div>
+    <div class="tunnel-ring absolute w-[200px] h-[200px] border-4 border-white/80 rounded-full"></div>
+    
+    <div class="relative text-center font-syne font-black text-4xl md:text-7xl text-white tracking-widest uppercase animate-pulse">
+      SWAGHUB
+      <div class="font-mono text-sm tracking-[0.5em] text-emerald-400 mt-2 font-normal">NIGHT SHIFT // DROP 001</div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. STICKY MAIN NAVIGATION BAR (Revealed After Zipper Sequence)             -->
+  <!-- ========================================================================= -->
+  <nav id="main-nav" class="fixed top-0 left-0 right-0 z-30 transform -translate-y-full opacity-0 transition-all duration-500 border-b border-zinc-800/80 px-6 py-3.5 bg-black/90 backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <a href="#hero-section" class="flex items-center gap-2.5 group">
+        <div class="w-7 h-7 bg-white text-black font-syne font-black text-base flex items-center justify-center rounded-sm group-hover:bg-zinc-200 transition-colors">
+          S
+        </div>
+        <span class="font-syne font-black text-base tracking-widest text-white uppercase">SWAGHUB</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8 font-mono text-xs tracking-wider uppercase text-zinc-400">
+        <a href="#featured-drop" class="hover:text-white transition-colors">FEATURED DROP</a>
+        <a href="#lookbook" class="hover:text-white transition-colors">LOOKBOOK</a>
+        <a href="#story" class="hover:text-white transition-colors">THE STORY</a>
+        <a href="#catalog" class="hover:text-white transition-colors">ALL PIECES</a>
+        <a href="#newsletter" class="hover:text-white transition-colors">VIP ACCESS</a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span class="hidden sm:inline-block font-mono text-xs text-zinc-500">USD ($)</span>
+        
+        <button 
+          class="open-bag-btn flex items-center gap-2 px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white rounded-full font-mono text-xs tracking-wider transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span>BAG</span>
+          <span class="bag-count-badge w-4 h-4 rounded-full bg-white text-black font-mono text-[10px] font-bold flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- 4. MAIN HOMEPAGE SECTIONS                                                 -->
+  <!-- ========================================================================= -->
+  <main id="main-content" class="relative z-10 w-full min-h-screen pt-12 pb-24 bg-void">
+    
+    <!-- Section 1: Editorial Masthead -->
+    <section class="max-w-7xl mx-auto px-6 mb-24 editorial-panel">
+      <div class="border-b border-zinc-800 pb-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <span class="text-xs font-mono text-zinc-400 tracking-[0.3em] uppercase block mb-2">AUTONOMOUS TECHNICAL APPAREL</span>
+            <h1 class="text-4xl sm:text-6xl lg:text-8xl font-syne font-black text-white uppercase tracking-tight leading-none">
+              SWAGHUB<span class="text-zinc-600">/</span><br>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-300 to-zinc-600">WEAR YOUR SIGNAL</span>
+            </h1>
+          </div>
+
+          <div class="max-w-md space-y-3 font-mono text-xs text-zinc-400">
+            <p>
+              Engineered in Tokyo and Berlin for low-light metropolitan survival. Heavy composite Cordura®, 3M™ Scotchlite™ optical reflection, and modular quick-detach hardware.
+            </p>
+            <div class="flex items-center gap-4 text-zinc-300 pt-2 border-t border-zinc-900">
+              <span class="text-emerald-400 font-bold">STATUS: 001 ACTIVE</span>
+              <span>•</span>
+              <span>100% SECURE CHECKOUT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Featured Drop (3 Hero Original Concepts) -->
+    <section id="featured-drop" class="max-w-7xl mx-auto px-6 mb-32 editorial-panel">
+      <div class="flex items-center justify-between mb-10">
+        <div>
+          <span class="text-xs font-mono text-emerald-400 tracking-widest uppercase block">CURRENT DISPATCH</span>
+          <h2 class="text-2xl md:text-4xl font-syne font-black text-white uppercase tracking-wider mt-1">FEATURED DROP // 001</h2>
+        </div>
+        <a href="#catalog" class="font-mono text-xs text-zinc-400 hover:text-white uppercase tracking-wider flex items-center gap-1.5">
+          <span>VIEW FULL CATALOG</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <!-- 3 Hero Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Hero Product 1: Phantom Zip Bomber -->
+        <article class="product-card group relative bg-zinc-950 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-500 hover:border-zinc-500 hover:shadow-2xl">
+          <div class="card-sheen pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-transparent via-white/5 to-transparent"></div>
+          
+          <div class="flex justify-between items-center z-10">
+            <span class="px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-700 text-white rounded font-bold">DROP HERO</span>
+            <span class="text-xs font-mono text-zinc-400 font-bold">$480.00</span>
+          </div>
+
+          <div class="relative w-full h-80 my-4 flex items-center justify-center cursor-pointer select-none" onclick="window.app.openProductModal('phantom-zip-bomber')">
+            <div class="card-front-view absolute inset-0 transition-opacity duration-300 group-hover:opacity-0 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <path d="M150 70 Q200 95 250 70 L270 220 L260 380 L140 380 L130 220 Z" fill="#141417" stroke="#3f3f46" stroke-width="1.5"/>
+                <path d="M150 70 L80 160 L50 330 L95 345 L130 220 Z" fill="#121214" stroke="#27272a"/>
+                <path d="M250 70 L320 160 L350 330 L305 345 L270 220 Z" fill="#121214" stroke="#27272a"/>
+                <line x1="200" y1="88" x2="200" y2="380" stroke="#f4f4f5" stroke-width="2.5" stroke-dasharray="4,2"/>
+                <rect x="205" y="125" width="46" height="22" rx="2" fill="#09090b" stroke="#e4e4e7" stroke-width="1"/>
+                <text x="210" y="138" font-family="'Syne', sans-serif" font-weight="900" font-size="7" fill="#f4f4f5">SWAGHUB</text>
+                <path d="M140 380 L260 380 L255 410 L145 410 Z" fill="#1f1f23" stroke="#3f3f46"/>
+              </svg>
+            </div>
+            <div class="card-back-view absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <path d="M150 70 Q200 65 250 70 L270 220 L260 380 L140 380 L130 220 Z" fill="#121214" stroke="#27272a" stroke-width="1.5"/>
+                <text x="200" y="240" font-family="'Syne', sans-serif" font-weight="900" font-size="24" fill="#27272a" text-anchor="middle" letter-spacing="6">SWAGHUB</text>
+                <text x="200" y="260" font-family="'Space Grotesk', monospace" font-size="8" fill="#71717a" text-anchor="middle">SIGNAL CORP 001</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="z-10 space-y-3">
+            <div>
+              <h3 class="font-syne font-black text-xl text-white uppercase tracking-wider">Phantom Zip Bomber</h3>
+              <p class="text-xs text-zinc-400 mt-1">Black technical Cordura® flight jacket with 3M reflective edge piping.</p>
+            </div>
+
+            <div class="flex items-center gap-2 pt-2 border-t border-zinc-900">
+              <button onclick="window.bag.addItem('phantom-zip-bomber', 'L')" class="flex-1 py-2.5 bg-white hover:bg-zinc-200 text-black font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors">
+                + ADD TO BAG (SIZE L)
+              </button>
+              <button onclick="window.app.openProductModal('phantom-zip-bomber')" class="p-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-mono" aria-label="Inspect piece">
+                ℹ
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Hero Product 2: Static Cargo -->
+        <article class="product-card group relative bg-zinc-950 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-500 hover:border-zinc-500 hover:shadow-2xl">
+          <div class="card-sheen pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-transparent via-white/5 to-transparent"></div>
+          
+          <div class="flex justify-between items-center z-10">
+            <span class="px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-700 text-white rounded font-bold">MODULAR FIT</span>
+            <span class="text-xs font-mono text-zinc-400 font-bold">$340.00</span>
+          </div>
+
+          <div class="relative w-full h-80 my-4 flex items-center justify-center cursor-pointer select-none" onclick="window.app.openProductModal('static-cargo')">
+            <div class="card-front-view absolute inset-0 transition-opacity duration-300 group-hover:opacity-0 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <rect x="110" y="50" width="180" height="25" rx="3" fill="#18181b" stroke="#3f3f46"/>
+                <path d="M110 75 L185 85 L180 260 L195 440 L125 440 L105 240 Z" fill="#1e1e24" stroke="#27272a"/>
+                <path d="M290 75 L215 85 L220 260 L205 440 L275 440 L295 240 Z" fill="#1e1e24" stroke="#27272a"/>
+                <polygon points="95,170 145,180 140,270 90,260" fill="#141417" stroke="#3f3f46"/>
+                <polygon points="305,170 255,180 260,270 310,260" fill="#141417" stroke="#3f3f46"/>
+                <rect x="145" y="325" width="12" height="16" rx="2" fill="#e4e4e7"/>
+                <rect x="243" y="325" width="12" height="16" rx="2" fill="#e4e4e7"/>
+              </svg>
+            </div>
+            <div class="card-back-view absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <rect x="110" y="50" width="180" height="25" rx="3" fill="#18181b" stroke="#3f3f46"/>
+                <path d="M110 75 L290 75 L275 440 L205 440 L200 240 L195 440 L125 440 Z" fill="#141416" stroke="#27272a"/>
+                <rect x="125" y="110" width="45" height="35" fill="#18181b"/>
+                <rect x="230" y="110" width="45" height="35" fill="#18181b"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="z-10 space-y-3">
+            <div>
+              <h3 class="font-syne font-black text-xl text-white uppercase tracking-wider">Static Cargo</h3>
+              <p class="text-xs text-zinc-400 mt-1">Oversized charcoal cargo pants with modular cobra-style utility clasps.</p>
+            </div>
+
+            <div class="flex items-center gap-2 pt-2 border-t border-zinc-900">
+              <button onclick="window.bag.addItem('static-cargo', 'M')" class="flex-1 py-2.5 bg-white hover:bg-zinc-200 text-black font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors">
+                + ADD TO BAG (SIZE M)
+              </button>
+              <button onclick="window.app.openProductModal('static-cargo')" class="p-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-mono" aria-label="Inspect piece">
+                ℹ
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Hero Product 3: Afterimage Hoodie -->
+        <article class="product-card group relative bg-zinc-950 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-500 hover:border-zinc-500 hover:shadow-2xl">
+          <div class="card-sheen pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-transparent via-white/5 to-transparent"></div>
+          
+          <div class="flex justify-between items-center z-10">
+            <span class="px-2.5 py-1 text-[9px] font-mono tracking-widest uppercase bg-zinc-900 border border-zinc-700 text-white rounded font-bold">500 GSM</span>
+            <span class="text-xs font-mono text-zinc-400 font-bold">$260.00</span>
+          </div>
+
+          <div class="relative w-full h-80 my-4 flex items-center justify-center cursor-pointer select-none" onclick="window.app.openProductModal('afterimage-hoodie')">
+            <div class="card-front-view absolute inset-0 transition-opacity duration-300 group-hover:opacity-0 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <path d="M140 100 Q200 40 260 100 Q200 130 140 100 Z" fill="#27272a" stroke="#3f3f46"/>
+                <path d="M140 100 Q200 125 260 100 L270 210 L260 380 L140 380 L130 210 Z" fill="#242429" stroke="#27272a"/>
+                <path d="M140 100 L60 170 L30 330 L80 340 L120 210 Z" fill="#242429"/>
+                <path d="M260 100 L340 170 L370 330 L320 340 L280 210 Z" fill="#242429"/>
+                <polygon points="150,270 250,270 260,370 140,370" fill="#1c1c20" stroke="#3f3f46"/>
+              </svg>
+            </div>
+            <div class="card-back-view absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center p-2">
+              <svg viewBox="0 0 400 480" class="w-full h-full object-contain filter drop-shadow-2xl">
+                <path d="M140 100 Q200 90 260 100 L270 210 L260 380 L140 380 L130 210 Z" fill="#232327" stroke="#27272a"/>
+                <text x="200" y="220" font-family="'Syne', sans-serif" font-weight="900" font-size="26" fill="#3f3f46" text-anchor="middle" letter-spacing="4">WEAR YOUR</text>
+                <text x="200" y="255" font-family="'Syne', sans-serif" font-weight="900" font-size="32" fill="#52525b" text-anchor="middle" letter-spacing="6">SIGNAL</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="z-10 space-y-3">
+            <div>
+              <h3 class="font-syne font-black text-xl text-white uppercase tracking-wider">Afterimage Hoodie</h3>
+              <p class="text-xs text-zinc-400 mt-1">Washed volcanic gray heavyweight loopback terry with silicone relief.</p>
+            </div>
+
+            <div class="flex items-center gap-2 pt-2 border-t border-zinc-900">
+              <button onclick="window.bag.addItem('afterimage-hoodie', 'L')" class="flex-1 py-2.5 bg-white hover:bg-zinc-200 text-black font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors">
+                + ADD TO BAG (SIZE L)
+              </button>
+              <button onclick="window.app.openProductModal('afterimage-hoodie')" class="p-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-mono" aria-label="Inspect piece">
+                ℹ
+              </button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Section 3: Interactive Editorial Lookbook -->
+    <section id="lookbook" class="max-w-7xl mx-auto px-6 mb-32 editorial-panel">
+      <div class="border-t border-zinc-800/80 pt-16">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <span class="text-xs font-mono text-zinc-400 tracking-[0.25em] uppercase block">INTERACTIVE LOOKBOOK</span>
+            <h2 id="lookbook-headline" class="text-2xl md:text-5xl font-syne font-black text-white uppercase tracking-tight mt-1">
+              WEAR YOUR SIGNAL IN THE STATIC
+            </h2>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span id="lookbook-counter" class="font-mono text-xs text-zinc-500 font-bold">01 / 03</span>
+            <div class="flex gap-2">
+              <button id="lookbook-prev" class="w-10 h-10 rounded-full border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black flex items-center justify-center font-mono text-sm transition-colors" aria-label="Previous Look">
+                ←
+              </button>
+              <button id="lookbook-next" class="w-10 h-10 rounded-full border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black flex items-center justify-center font-mono text-sm transition-colors" aria-label="Next Look">
+                →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lookbook Viewport Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <div class="lg:col-span-8 h-[480px]">
+            <div id="lookbook-viewport" class="w-full h-full"></div>
+          </div>
+
+          <div class="lg:col-span-4 flex flex-col justify-between p-6 bg-zinc-950 border border-zinc-800 rounded-lg">
+            <div class="space-y-4">
+              <span id="lookbook-location" class="text-[11px] font-mono text-emerald-400 uppercase tracking-widest block">
+                SHIBUYA UNDERPASS - 03:42 AM
+              </span>
+              <h3 id="lookbook-title" class="text-xl font-syne font-black text-white uppercase tracking-wider">
+                SCENE 01 // MIDNIGHT METROPOLIS
+              </h3>
+              <p id="lookbook-desc" class="text-xs text-zinc-400 leading-relaxed">
+                Phantom Zip Bomber layered over Afterimage Hoodie with 3M reflective luminescence activated under sodium streetlights.
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-zinc-900 space-y-3">
+              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">TAGGED LOOK ARTIFACTS:</span>
+              <div class="space-y-2">
+                <button onclick="window.app.openProductModal('phantom-zip-bomber')" class="w-full text-left p-2.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded flex items-center justify-between text-xs font-mono text-zinc-200">
+                  <span>Phantom Zip Bomber</span>
+                  <span class="text-white font-bold">$480</span>
+                </button>
+                <button onclick="window.app.openProductModal('static-cargo')" class="w-full text-left p-2.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded flex items-center justify-between text-xs font-mono text-zinc-200">
+                  <span>Static Cargo (Charcoal)</span>
+                  <span class="text-white font-bold">$340</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: "Built for the Night Shift" Brand Story -->
+    <section id="story" class="max-w-7xl mx-auto px-6 mb-32 editorial-panel">
+      <div class="bg-gradient-to-b from-zinc-950 via-zinc-900/40 to-black border border-zinc-800 rounded-2xl p-8 md:p-14 relative overflow-hidden">
+        
+        <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-zinc-700/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-3xl relative z-10 space-y-6">
+          <span class="text-xs font-mono text-emerald-400 tracking-[0.3em] uppercase">MANIFESTO // SPEC-01</span>
+          <h2 class="text-3xl sm:text-5xl font-syne font-black text-white uppercase tracking-tight leading-tight">
+            BUILT FOR THE<br>NIGHT SHIFT
+          </h2>
+          <p class="text-sm md:text-base text-zinc-300 leading-relaxed font-sans">
+            SwagHUB is an underground technical collective founded at the intersection of Tokyo brutalist concrete and Berlin industrial warehouse architecture. We engineer garments not as transient trends, but as protective urban armor designed for the low-light hours.
+          </p>
+
+          <!-- Technical Material Specs Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-zinc-800 text-xs font-mono">
+            <div class="space-y-1">
+              <span class="text-zinc-500 block text-[10px]">WEAVE</span>
+              <span class="text-white font-bold">500D CORDURA®</span>
+            </div>
+            <div class="space-y-1">
+              <span class="text-zinc-500 block text-[10px]">REFLECTIVE</span>
+              <span class="text-white font-bold">3M™ 550 CD/LUX</span>
+            </div>
+            <div class="space-y-1">
+              <span class="text-zinc-500 block text-[10px]">HARDWARE</span>
+              <span class="text-white font-bold">YKK METALUXE®</span>
+            </div>
+            <div class="space-y-1">
+              <span class="text-zinc-500 block text-[10px]">ORIGIN</span>
+              <span class="text-white font-bold">TOKYO / BERLIN</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 5: Filterable Product Grid Catalog -->
+    <section id="catalog" class="max-w-7xl mx-auto px-6 mb-32 editorial-panel">
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-800 gap-4">
+        <div>
+          <span class="text-xs font-mono text-zinc-400 tracking-widest uppercase block">THE ARCHIVE</span>
+          <h2 class="text-2xl md:text-4xl font-syne font-black text-white uppercase tracking-wider mt-1">ALL ARTIFACTS</h2>
+        </div>
+
+        <!-- Filter Category Tabs -->
+        <div class="flex flex-wrap gap-2 font-mono text-xs">
+          <button data-category="all" class="category-filter-btn px-4 py-2 rounded bg-white text-black font-bold uppercase transition-colors">
+            ALL (6)
+          </button>
+          <button data-category="outerwear" class="category-filter-btn px-4 py-2 rounded bg-zinc-900 text-zinc-400 hover:text-white uppercase transition-colors">
+            OUTERWEAR
+          </button>
+          <button data-category="bottoms" class="category-filter-btn px-4 py-2 rounded bg-zinc-900 text-zinc-400 hover:text-white uppercase transition-colors">
+            BOTTOMS
+          </button>
+          <button data-category="tops" class="category-filter-btn px-4 py-2 rounded bg-zinc-900 text-zinc-400 hover:text-white uppercase transition-colors">
+            TOPS
+          </button>
+          <button data-category="gear" class="category-filter-btn px-4 py-2 rounded bg-zinc-900 text-zinc-400 hover:text-white uppercase transition-colors">
+            GEAR & ACC
+          </button>
+        </div>
+      </div>
+
+      <!-- Render Grid Container -->
+      <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+    <!-- Section 6: VIP Access / Newsletter Signup -->
+    <section id="newsletter" class="max-w-7xl mx-auto px-6 mb-32 editorial-panel">
+      <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 md:p-14 text-center max-w-3xl mx-auto relative">
+        <span class="text-xs font-mono text-emerald-400 tracking-[0.3em] uppercase block mb-2">SECURE DISPATCH LIST</span>
+        <h2 class="text-3xl md:text-5xl font-syne font-black text-white uppercase tracking-tight">GET ON THE LIST</h2>
+        <p class="text-xs md:text-sm text-zinc-400 font-sans max-w-md mx-auto mt-3 leading-relaxed">
+          Receive priority notification 30 minutes prior to Drop 002 release. Instant generation of encrypted VIP dispatch credentials.
+        </p>
+
+        <!-- Newsletter Form -->
+        <form id="newsletter-form" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input 
+            type="email" 
+            id="newsletter-email" 
+            placeholder="ENTER YOUR EMAIL ADDRESS" 
+            required 
+            class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-xs font-mono text-white placeholder-zinc-500 focus:outline-none focus:border-white transition-colors">
+          <button 
+            type="submit" 
+            class="px-6 py-3 bg-white hover:bg-zinc-200 text-black font-syne font-bold text-xs uppercase tracking-widest rounded-lg transition-colors shadow-lg">
+            REQUEST SIGNAL
+          </button>
+        </form>
+
+        <!-- Generated VIP Code Reveal Box -->
+        <div id="vip-code-container" class="hidden mt-6 p-4 bg-zinc-900/90 border border-emerald-500/40 rounded-lg max-w-sm mx-auto animate-fadeIn">
+          <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-widest block">VIP PASS GRANTED // 20% OFF FIRST DROP:</span>
+          <span id="generated-vip-code" class="text-base font-mono font-bold text-white tracking-widest mt-1 block">SWAG-8849-VIP</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 5. FOOTER                                                                 -->
+  <!-- ========================================================================= -->
+  <footer class="bg-black border-t border-zinc-800/80 py-16 px-6 text-zinc-400 font-mono text-xs">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+      
+      <!-- Brand & Mission -->
+      <div class="space-y-3 md:col-span-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-6 h-6 bg-white text-black font-syne font-black text-sm flex items-center justify-center rounded-sm">S</div>
+          <span class="font-syne font-black text-base text-white tracking-widest uppercase">SWAGHUB</span>
+        </div>
+        <p class="text-xs text-zinc-500 max-w-sm leading-relaxed">
+          High-performance dark luxury streetwear engineered for low-light metropolitan environments. Dispatched directly from Tokyo & Berlin.
+        </p>
+        <p class="text-[10px] text-zinc-600">© 2026 SWAGHUB INC. ALL RIGHTS RESERVED.</p>
+      </div>
+
+      <!-- Navigation & Sizing -->
+      <div class="space-y-2.5">
+        <h4 class="text-white font-bold text-xs tracking-wider uppercase mb-3">NAVIGATION</h4>
+        <p><a href="#featured-drop" class="hover:text-white transition-colors">FEATURED DROP</a></p>
+        <p><a href="#lookbook" class="hover:text-white transition-colors">EDITORIAL LOOKBOOK</a></p>
+        <p><a href="#catalog" class="hover:text-white transition-colors">ARCHIVE CATALOG</a></p>
+        <p><button onclick="window.app.openSizingModal()" class="hover:text-white transition-colors text-left">SIZING SPECIFICATIONS</button></p>
+      </div>
+
+      <!-- Legal & Dispatch -->
+      <div class="space-y-2.5">
+        <h4 class="text-white font-bold text-xs tracking-wider uppercase mb-3">DISPATCH PROTOCOLS</h4>
+        <p>WORLDWIDE EXPRESS (DHL/FEDEX)</p>
+        <p>DUTIES & TAXES INCLUDED</p>
+        <p>ENCRYPTED SSL PROTOCOL</p>
+        <p class="text-emerald-400">NODE STATUS: 99.98% OPERATIONAL</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 6. SLIDE-OVER SHOPPING BAG DRAWER                                          -->
+  <!-- ========================================================================= -->
+  <div id="bag-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <aside id="shopping-bag-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-zinc-950 border-l border-zinc-800 z-50 transform translate-x-full transition-transform duration-500 flex flex-col justify-between shadow-2xl">
+    
+    <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="font-syne font-black text-lg text-white uppercase tracking-wider">SHOPPING BAG</span>
+        <span class="bag-count-badge px-2 py-0.5 bg-zinc-800 text-white font-mono text-[10px] font-bold rounded-full">0</span>
+      </div>
+      <button class="close-bag-btn text-zinc-400 hover:text-white font-mono text-sm p-2" aria-label="Close bag">
+        ✕
+      </button>
+    </div>
+
+    <div class="px-5 py-3 bg-zinc-900/60 border-b border-zinc-850">
+      <div id="shipping-threshold-notice" class="text-[11px] font-mono text-zinc-300 text-center mb-1.5">
+        ADD $300 FOR FREE WORLDWIDE EXPRESS DISPATCH
+      </div>
+      <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+        <div id="shipping-progress-bar" class="h-full bg-emerald-500 w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+
+    <div id="bag-items-list" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+
+    <div class="p-5 border-t border-zinc-800 bg-zinc-950 space-y-4">
+      <div>
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="promo-input" 
+            placeholder="PROMO CODE (e.g. NIGHTSHIFT10)" 
+            class="flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-xs font-mono text-white placeholder-zinc-600 focus:outline-none focus:border-white uppercase">
+          <button 
+            id="apply-promo-btn"
+            class="px-4 py-2 bg-zinc-800 hover:bg-white hover:text-black text-white font-mono text-xs font-bold rounded transition-colors">
+            APPLY
+          </button>
+        </div>
+        <span id="promo-feedback" class="hidden"></span>
+      </div>
+
+      <div class="space-y-1.5 font-mono text-xs text-zinc-400">
+        <div class="flex justify-between">
+          <span>SUBTOTAL</span>
+          <span id="bag-subtotal" class="text-white font-bold">$0.00</span>
+        </div>
+        <div id="bag-discount-row" class="hidden flex justify-between text-emerald-400">
+          <span>VIP VOUCHER DISCOUNT</span>
+          <span id="bag-discount-amount">-$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>WORLDWIDE EXPRESS DISPATCH</span>
+          <span id="bag-shipping-amount" class="text-white">FREE</span>
+        </div>
+        <div class="flex justify-between text-sm text-white font-bold pt-2 border-t border-zinc-800">
+          <span>TOTAL ESTIMATE</span>
+          <span id="bag-total" class="text-emerald-400">$0.00</span>
+        </div>
+      </div>
+
+      <button 
+        id="proceed-checkout-btn" 
+        class="w-full py-3.5 bg-white hover:bg-zinc-200 text-black font-syne font-bold text-xs uppercase tracking-widest rounded transition-colors shadow-2xl flex items-center justify-center gap-2">
+        <span>PROCEED TO CHECKOUT</span>
+        <span>→</span>
+      </button>
+
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 7. PRODUCT DETAIL MODAL (360 Angle Inspector & Full Specifications)        -->
+  <!-- ========================================================================= -->
+  <div id="product-detail-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-4xl bg-zinc-950 border border-zinc-700 rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button 
+        onclick="document.getElementById('product-detail-modal').classList.add('hidden')" 
+        class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-zinc-900 hover:bg-white hover:text-black border border-zinc-700 text-white flex items-center justify-center font-mono text-sm transition-colors" 
+        aria-label="Close modal">
+        ✕
+      </button>
+
+      <div id="product-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 8. CHECKOUT MODAL                                                         -->
+  <!-- ========================================================================= -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-xl bg-zinc-950 border border-zinc-700 rounded-2xl p-6 shadow-2xl">
+      <button 
+        onclick="document.getElementById('checkout-modal').classList.add('hidden')" 
+        class="absolute top-4 right-4 text-zinc-400 hover:text-white font-mono text-sm" 
+        aria-label="Close checkout">
+        ✕
+      </button>
+      <div id="checkout-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 9. SIZING CHART MODAL                                                     -->
+  <!-- ========================================================================= -->
+  <div id="sizing-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl p-6 shadow-2xl font-mono text-xs text-zinc-300 space-y-4">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <h3 class="font-syne font-bold text-lg text-white uppercase">GARMENT SIZING SPECIFICATIONS (CM)</h3>
+        <button id="close-sizing-modal" class="text-zinc-400 hover:text-white">✕</button>
+      </div>
+
+      <table class="w-full text-left border-collapse border border-zinc-800">
+        <thead>
+          <tr class="bg-zinc-900 text-white">
+            <th class="p-2.5 border border-zinc-800">SIZE</th>
+            <th class="p-2.5 border border-zinc-800">CHEST</th>
+            <th class="p-2.5 border border-zinc-800">SHOULDER</th>
+            <th class="p-2.5 border border-zinc-800">LENGTH</th>
+            <th class="p-2.5 border border-zinc-800">SLEEVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-2.5 border border-zinc-800 font-bold text-white">S</td>
+            <td class="p-2.5 border border-zinc-800">118</td>
+            <td class="p-2.5 border border-zinc-800">54</td>
+            <td class="p-2.5 border border-zinc-800">68</td>
+            <td class="p-2.5 border border-zinc-800">63</td>
+          </tr>
+          <tr class="bg-zinc-900/40">
+            <td class="p-2.5 border border-zinc-800 font-bold text-white">M</td>
+            <td class="p-2.5 border border-zinc-800">124</td>
+            <td class="p-2.5 border border-zinc-800">56</td>
+            <td class="p-2.5 border border-zinc-800">70</td>
+            <td class="p-2.5 border border-zinc-800">65</td>
+          </tr>
+          <tr>
+            <td class="p-2.5 border border-zinc-800 font-bold text-white">L (STANDARD FIT)</td>
+            <td class="p-2.5 border border-zinc-800">130</td>
+            <td class="p-2.5 border border-zinc-800">58</td>
+            <td class="p-2.5 border border-zinc-800">72</td>
+            <td class="p-2.5 border border-zinc-800">67</td>
+          </tr>
+          <tr class="bg-zinc-900/40">
+            <td class="p-2.5 border border-zinc-800 font-bold text-white">XL (OVERSIZED)</td>
+            <td class="p-2.5 border border-zinc-800">136</td>
+            <td class="p-2.5 border border-zinc-800">60</td>
+            <td class="p-2.5 border border-zinc-800">74</td>
+            <td class="p-2.5 border border-zinc-800">69</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="text-[11px] text-zinc-500">
+        *All garments feature an intentional boxy oversized streetwear silhouette. For a standard fit, order your normal size. For extreme oversized drape, order one size up.
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 10. FLOATING TOAST NOTIFICATION                                           -->
+  <!-- ========================================================================= -->
+  <aside id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-zinc-900/95 border border-zinc-700 text-white font-mono text-xs px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 pointer-events-none" aria-live="polite">
+    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+    <span id="toast-text">SYSTEM READY</span>
+  </aside>
+
+  <!-- Application Scripts -->
+  <script src="js/products-data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/webgl-hero.js"></script>
+  <script src="js/tunnel-transition.js"></script>
+  <script src="js/lookbook.js"></script>
+  <script src="js/bag.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

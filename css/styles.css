@@ -1,0 +1,180 @@
+/* SwagHUB Dark Luxury Streetwear Aesthetic Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800;900&display=swap');
+
+:root {
+  --color-void: #050507;
+  --color-charcoal-950: #0a0a0d;
+  --color-charcoal-900: #121216;
+  --color-charcoal-800: #1a1a20;
+  --color-charcoal-700: #272730;
+  --color-silver: #8e8e93;
+  --color-silver-light: #d1d5db;
+  --color-chrome: #f4f4f5;
+  --color-signal-red: #ef4444;
+  --color-signal-green: #10b981;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-chrome);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+::selection {
+  background: #f4f4f5;
+  color: #050507;
+}
+
+/* Custom Film Grain Shader Overlay */
+.film-grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+/* Typography Utility Classes */
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+.font-mono {
+  font-family: 'Space Grotesk', monospace;
+}
+
+/* Custom Cursor */
+#custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  margin-left: -17px;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              margin 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.3s ease,
+              background-color 0.3s ease;
+  mix-blend-mode: difference;
+}
+
+#custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  margin-left: -2px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  mix-blend-mode: difference;
+}
+
+.cursor-hover-active {
+  width: 54px !important;
+  height: 54px !important;
+  margin-top: -27px !important;
+  margin-left: -27px !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+}
+
+/* 3D Perspective Card Tilt */
+.product-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Metallic Chrome Sheen Keyframes */
+@keyframes chromeSheen {
+  0% { transform: translateX(-100%) rotate(35deg); }
+  100% { transform: translateX(200%) rotate(35deg); }
+}
+
+.animate-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.animate-sheen::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 65%
+  );
+  animation: chromeSheen 6s infinite linear;
+  pointer-events: none;
+}
+
+/* Hyperspace Tunnel Animation */
+@keyframes tunnelPulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.tunnel-ring {
+  animation: tunnelPulse 3s infinite ease-in-out;
+}
+
+/* Glowing Border Pulse */
+.glow-border {
+  box-shadow: 0 0 25px -5px rgba(255, 255, 255, 0.15);
+}
+
+/* Print Styles for Checkout Receipt */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #checkout-modal, #checkout-modal * {
+    visibility: visible;
+  }
+  #checkout-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    color: black !important;
+  }
+}
